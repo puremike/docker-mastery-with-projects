@@ -1,0 +1,32 @@
+version: '3'
+services:
+  flask-app:
+    image: scophee/grade-submission-portal:1.1
+    container_name: flask-app
+    ports:
+      - '5001:5001'
+    environment:
+      - GRADE_SERVICE_HOST=node-server
+    depends_on:
+      - node-server
+
+  node-server:
+    image: scophee/grade-submission-api:2.0
+    container_name: node-server
+    environment:
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - DB_NAME=grade-db
+    ports:
+      - '3000:3000'
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=grade-db
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

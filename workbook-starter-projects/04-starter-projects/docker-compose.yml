@@ -1,0 +1,158 @@
+version: '3'
+services:
+  ecommerce-app:
+    image: scophee/ecommerce-app
+    container_name: ecommerce-app
+    ports:
+      - '4000:4000'
+    environment:
+      - REACT_APP_PROFILE_API_HOST=http://profile-management-api
+      - REACT_APP_PRODUCT_API_HOST=http://product-catalog-api
+      - REACT_APP_INVENTORY_API_HOST=http://product-inventory-api
+      - REACT_APP_ORDER_API_HOST=http://order-management-api
+      - REACT_APP_SHIPPING_API_HOST=http://shipping-and-handling-api
+      - REACT_APP_CONTACT_API_HOST=http://contact-api
+    depends_on:
+      - profile-management-api
+      - product-catalog-api
+      - product-inventory-api
+      - shipping-and-handling-api
+      - contact-api
+      - order-management-api
+
+  profile-management-api:
+    image: scophee/profile-management-api:2.0
+    container_name: profile-management-api
+    ports:
+      - '3003:3003'
+    environment:
+      - MYSQL_HOST=mysql_profile_management
+      - MYSQL_PORT=3306
+      - MYSQL_USER=profile_us
+      - MYSQL_PASSWORD=profile_pass
+      - MYSQL_DATABASE=profile_management_db
+    depends_on:
+      - mysql_profile_management
+
+  mysql_profile_management:
+    image: mysql:8.4.0
+    container_name: mysql_profile_management
+    environment:
+      - MYSQL_DATABASE=profile_management_db
+      - MYSQL_USER=profile_us
+      - MYSQL_PASSWORD=profile_pass
+      - MYSQL_ROOT_PASSWORD=root_pass
+    volumes:
+      - mysql_profile_management_data:/var/lib/mysql
+
+  product-catalog-api:
+    image: scophee/product-catalog-api:2.0
+    container_name: product-catalog-api
+    ports:
+      - '3001:3001'
+    depends_on:
+      - mongodb_product_catalog
+    environment:
+      - MONGODB_HOST=mongodb_product_catalog
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=product_catalog_db
+
+  mongodb_product_catalog:
+    image: mongo
+    container_name: mongodb_product_catalog
+    # environment:
+    #   - MONGO_INITDB_DATABASE=product_catalog_db
+    volumes:
+      - mongodb_product_catalog_data:/data/db
+
+  product-inventory-api:
+    image: scophee/product-inventory-api:2.0
+    container_name: product-inventory-api
+    ports:
+      - '3002:3002'
+    environment:
+      - POSTGRES_HOST=postgres_product_inventory
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=product_inventory_db
+      - POSTGRES_USER=inventory_us
+      - POSTGRES_PASSWORD=inventory_pass
+    depends_on:
+      - postgres_product_inventory
+
+  postgres_product_inventory:
+    image: postgres
+    container_name: postgres_product_inventory
+    environment:
+      - POSTGRES_DB=product_inventory_db
+      - POSTGRES_USER=inventory_us
+      - POSTGRES_PASSWORD=inventory_pass
+    volumes:
+      - postgres_product_inventory_data:/var/lib/postgresql/data
+
+  shipping-and-handling-api:
+    image: scophee/shipping-and-handling-api:2.0
+    container_name: shipping-and-handling-api
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mongodb_shipping
+    environment:
+      - MONGO_URI=mongodb://mongodb_shipping:27017
+
+  mongodb_shipping:
+    image: mongo
+    container_name: mongodb_shipping
+    # environment:
+    #   - MONGO_INITDB_DATABASE=shipping_db
+    volumes:
+      - mongodb_shipping_data:/data/db
+
+  contact-api:
+    image: scophee/contact-api:2.0
+    container_name: contact-api
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mongodb_contact
+    environment:
+      - MONGODB_HOST=mongodb_contact
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=contact_db
+
+  mongodb_contact:
+    image: mongo
+    container_name: mongodb_contact
+    # environment:
+    #   - MONGO_INITDB_DATABASE=contact_db
+    volumes:
+      - mongodb_contact_data:/data/db
+
+  order-management-api:
+    image: scophee/order-management-api:2.0
+    container_name: order-management-api
+    ports:
+      - '9090:9090'
+    depends_on:
+      - mongodb_order_management
+    environment:
+      - PRODUCT_INVENTORY_API_HOST=http://product-inventory-api
+      - PRODUCT_CATALOG_API_HOST=http://product-catalog-api
+      - SHIPPING_HANDLING_API_HOST=http://shipping-and-handling-api
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb_order_management:27017/order_management_db
+      # - SPRING_DATA_MONGODB_DATABASE=order_management_db
+
+  mongodb_order_management:
+    image: mongo
+    container_name: mongodb_order_management
+    environment:
+      - MONGO_INITDB_DATABASE=order_management_db
+    volumes:
+      - mongodb_order_management_data:/data/db
+
+volumes:
+  mysql_profile_management_data:
+  mongodb_contact_data:
+  mongodb_order_management_data:
+  mongodb_product_catalog_data:
+  postgres_product_inventory_data:
+  mongodb_shipping_data:

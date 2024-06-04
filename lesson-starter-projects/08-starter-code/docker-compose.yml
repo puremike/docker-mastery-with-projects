@@ -1,0 +1,16 @@
+version: '3'
+services:
+  flask-app:
+    image: scophee/grade-submission-portal:1.1
+    container_name: flask-app
+    ports:
+      - '5001:5001'
+    environment:
+      - GRADE_SERVICE_HOST=node-server
+    depends_on:
+      - node-server
+  node-server:
+    image: scophee/grade-submission-api:1.0
+    container_name: node-server
+    ports:
+      - '3000:3000'

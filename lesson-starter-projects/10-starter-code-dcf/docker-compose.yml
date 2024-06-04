@@ -1,0 +1,25 @@
+version: '3'
+services:
+  flask-app:
+    image: scophee/grade_submission_portal_multiarch
+    container_name: flask-app
+    ports:
+      - '5001:5001'
+    environment:
+      - GRADE_SUBMISSION_API=http://node-server:3000/grades
+    depends_on:
+      - node-server
+
+  node-server:
+    image: scophee/grade_submission_api_multiarch
+    container_name: node-server
+    ports:
+      - '3000:3000'
+# on the terminal, you will use the following command:
+# docker run --rm -p 5001:5001 -e GRADE_SUBMISSION_API=http://node-server:3000/grades --network check-them --name flask-app scophee/grade_submission_portal_multiarch
+# docker run --rm -p 3000:3000 --network check-them --name node-server scophee/grade_submission_api_multiarch
+
+# Steps to use buildx build:
+# docker buildx create --name my-builder
+# docker buildx use my-builder
+# docker buildx build -t --platform linux/amd64,linux/arm64,linux/arm/v7 scophee/grade_submission_portal_multiarch --push .

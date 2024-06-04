@@ -1,0 +1,61 @@
+version: '3'
+services:
+  ecommerce-app:
+    image: scophee/ecommerce-app
+    container_name: ecommerce-app
+    ports:
+      - '4000:4000'
+    environment:
+      - REACT_APP_PROFILE_API_HOST=http://profile-management-api
+      - REACT_APP_PRODUCT_API_HOST=http://product-catalog-api
+      - REACT_APP_INVENTORY_API_HOST=http://product-inventory-api
+      - REACT_APP_ORDER_API_HOST=http://order-management-api
+      - REACT_APP_SHIPPING_API_HOST=http://shipping-and-handling-api
+      - REACT_APP_CONTACT_API_HOST=http://contact-api
+    depends_on:
+      - profile-management-api
+      - product-catalog-api
+      - product-inventory-api
+      - shipping-and-handling-api
+      - contact-api
+      - order-management-api
+
+  profile-management-api:
+    image: scophee/profile-management-api:1.0
+    container_name: profile-management-api
+    ports:
+      - '3003:3003'
+
+  product-catalog-api:
+    image: scophee/product-catalog-api:1.0
+    container_name: product-catalog-api
+    ports:
+      - '3001:3001'
+
+  product-inventory-api:
+    image: scophee/product-inventory-api:1.0
+    container_name: product-inventory-api
+    ports:
+      - '3002:3002'
+
+  shipping-and-handling-api:
+    image: scophee/shipping-and-handling-api:1.0
+    container_name: shipping-and-handling-api
+    ports:
+      - '8080:8080'
+
+  contact-api:
+    image: scophee/contact-api:1.0
+    container_name: contact-api
+    ports:
+      - '8000:8000'
+
+  order-management-api:
+    image: scophee/order-management-api:1.0
+    container_name: order-management-api
+    ports:
+      - '9090:9090'
+    environment:
+      - PRODUCT_INVENTORY_API_HOST=http://product-inventory-api
+      - PRODUCT_CATALOG_API_HOST=http://product-catalog-api
+      - SHIPPING_HANDLING_API_HOST=http://shipping-and-handling-api

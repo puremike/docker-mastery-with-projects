@@ -1,0 +1,13 @@
+heroku login -i
+heroku container:login
+heroku create <app_name>
+heroku tag <username/docker-image> registry.heroku.com/<app_name>/web
+docker push registry.heroku.com/<app_name>/web
+heroku container:release web -a <app_name>
+
+set env variable to connect both applications:
+heroku config:set ENVIRONMENT_NAME=https://app_url(api)/<> --app <app_name>
+
+
+Destroy the container:
+heroku apps:destroy --app <app_name> --confirm </app_name>

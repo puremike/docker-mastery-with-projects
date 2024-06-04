@@ -1,0 +1,7 @@
+Developer: Greetings, Captain DevOps! This application is usually executed with the command:
+           java -cp JavaApp.jar JavaApp
+           However, I have full confidence in your abilities to containerize it and unleash its full potential. Fair winds and following seas!
+
+With Docker (Running the application inside docker containers):
+
+docker run --rm -v "C:\Users\ADMIN\Desktop\docker-course\lesson-starter-projects\02-starter-code:/app/" --name my-java-run openjdk:11-jre-slim java -cp /app/JavaApp.jar JavaApp
