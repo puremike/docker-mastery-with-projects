@@ -1,1 +1,1 @@
-# Docker Course Mastery with Hands on Project
+# Docker Course Mastery with Hands on Projects
